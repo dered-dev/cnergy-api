@@ -16,12 +16,30 @@ const userSchema = new mongoose.Schema({
     maxlength: 200,
     required: true
   },
-  name: {
+  firstName: {
+    type: String,
+    minlength: 3,
+    maxlength: 100,
+    required: true
+  },
+  lastName: {
     type: String,
     minlength: 3,
     maxlength: 100
+  },
+  phone: {
+    type: String,
+    minlength: 3,
+    maxlength: 20,
+    required: true
+  },
+  address: {
+    type: String,
+    minlength: 3,
+    maxlength: 20,
+    required: true
   }
 })
 
-// create model
+// create model users
 module.exports = mongoose.model('users', userSchema)

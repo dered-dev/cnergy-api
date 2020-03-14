@@ -1,8 +1,8 @@
 const express = require('express')
 const cors = require('cors')
 
-const postsRouter = require('./routes/posts')
 const usersRouter = require('./routes/users')
+const odersRouter = require('./routes/orders')
 
 const app = express()
 
@@ -12,7 +12,7 @@ app.use(cors())
 // middleware JSON body
 app.use(express.json())
 
-app.use('/posts', postsRouter)
+app.use('/orders', odersRouter)
 app.use('/users', usersRouter)
 
 module.exports = app
