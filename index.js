@@ -4,12 +4,12 @@ const server = require('./src/server')
 
 db
   .then(() => {
-    console.log('Estamos conectados')
-    console.log('Levantando servicio')
+    console.log('Connected')
+    console.log('Pull up service')
     server.listen(8080, () => {
-      console.log('server runing')
+      console.log('server is runing')
     })
   })
   .catch(error => {
-    console.error('Algo salio mal', error)
+    console.error('Something went wrong', error)
   })
