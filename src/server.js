@@ -9,9 +9,10 @@ const app = express()
 // middleware CORS
 app.use(cors())
 
-// middleware JSON body
+// middleware to get body in JSON format
 app.use(express.json())
 
+// mount routers orders and users
 app.use('/orders', odersRouter)
 app.use('/users', usersRouter)
 
