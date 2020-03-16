@@ -22,9 +22,9 @@ function getAll () {
 
 async function login (email, password) {
   const userFound = await User.findOne({ email })
-  if (!userFound) throw new Error('User not found')
+  if (!userFound) throw new Error("Credentials don't match")
   const isValidPassword = await bcrypt.compare(password, userFound.password)
-  if (!isValidPassword) throw new Error('El pass no esta ok')
+  if (!isValidPassword) throw new Error("Credentials don't match")
 
   return jwt.sign({ id: userFound._id })
 }

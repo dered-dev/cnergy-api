@@ -1,3 +1,4 @@
+# Configuration for ibmcloud deploy
 applications:
 - name: cnergy-api
   random-route: true
