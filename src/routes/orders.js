@@ -2,6 +2,19 @@ const express = require('express')
 const order = require('../usecases/order')
 const auth = require('../middlewares/auth')
 const router = express.Router()
+const moment = require('moment')
+
+// API sendgrid
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+// moment months spanish
+moment.updateLocale('mx', {
+  months: [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+    'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Deciembre'
+  ]
+})
 
 // /orders -> create()
 router.post('/', async (request, response) => {
@@ -28,6 +41,36 @@ router.post('/', async (request, response) => {
       address,
       payment
     })
+
+    // human date format -> 20 de mayo de 2020
+    const humanDate = moment(deliveryDate).format('DD') + ' de ' + moment(deliveryDate).format('MMMM') + ' de ' + moment(deliveryDate).format('YYYY')
+
+    const msg = {
+      to: 'jlcc170@gmail.com',
+      from: 'kodemiajorge@gmail.com',
+      subject: 'New order! Cnergy ',
+      html: `
+        <table align="center" style="max-width: 400px; margin-left: auto; margin-right: auto">
+          <tbody >
+            <tr>
+              <td>
+                <div style="border-radius: 4px;box-shadow: 0 4px 10px rgba(0,0,0,.3);padding: 20px;border: 1px solid rgba(0,0,0,.1)">
+                  <h2>Detalle de su compra en <b>Cnergy</b></h2> <br>
+                  <p><b>Número de orden:</b> ${newOrder.orderId}</p>
+                  <p><b>Fecha de entrega:</b> ${humanDate}</p>
+                  <p><b>Hora aproximada de entrega:</b> ${deliveryHour.substring(0, 5)} hrs</p>
+                  <p><b>Litros:</b> ${liters}</p>
+                  <p><b>Precio x Litro:</b> ${priceLiter}</p>
+                  <p><b>Total de su compra:</b> ${total}</p>
+                  <p><b>Domicilio de entrega:</b> ${address}</p>
+                </div>
+              </tr>
+            </td>
+          </tbody>
+        </table >
+      `
+    }
+    sgMail.send(msg)
 
     response.json({
       success: true,

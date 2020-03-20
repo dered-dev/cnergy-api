@@ -1,4 +1,25 @@
 const mongoose = require('mongoose')
+const autoIncrement = require('mongoose-auto-increment')
+
+require('dotenv').config()
+
+// DB options
+const {
+  DB_PASSWORD,
+  DB_NAME,
+  DB_USER,
+  DB_HOST
+} = process.env
+
+const url = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`
+const connection = mongoose.createConnection(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+mongoose.set('useCreateIndex', true)
+
+// for orderId
+autoIncrement.initialize(connection)
 
 // create schema order
 const orderSchema = new mongoose.Schema({
@@ -57,6 +78,14 @@ const orderSchema = new mongoose.Schema({
       phoneNumber: ''
     }
   }
+})
+
+// set autoincrement plugin
+orderSchema.plugin(autoIncrement.plugin, {
+  model: 'orders',
+  field: 'orderId',
+  startAt: 100,
+  incrementBy: 1
 })
 
 // create model orders with order Schema
