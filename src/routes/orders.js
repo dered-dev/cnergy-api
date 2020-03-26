@@ -18,8 +18,10 @@ moment.updateLocale('mx', {
 
 // /orders -> create()
 router.post('/', async (request, response) => {
+  console.log(request.body)
   try {
     var {
+      email,
       total,
       liters,
       idUser,
@@ -46,7 +48,7 @@ router.post('/', async (request, response) => {
     const humanDate = moment(deliveryDate).format('DD') + ' de ' + moment(deliveryDate).format('MMMM') + ' de ' + moment(deliveryDate).format('YYYY')
 
     const msg = {
-      to: 'jlcc170@gmail.com',
+      to: email,
       from: 'kodemiajorge@gmail.com',
       subject: 'New order! Cnergy ',
       html: `
@@ -60,8 +62,8 @@ router.post('/', async (request, response) => {
                   <p><b>Fecha de entrega:</b> ${humanDate}</p>
                   <p><b>Hora aproximada de entrega:</b> ${deliveryHour.substring(0, 5)} hrs</p>
                   <p><b>Litros:</b> ${liters}</p>
-                  <p><b>Precio x Litro:</b> ${priceLiter}</p>
-                  <p><b>Total de su compra:</b> ${total}</p>
+                  <p><b>Precio x Litro:</b> $${priceLiter} MXN</p>
+                  <p><b>Total de su compra:</b> $${total} MXN</p>
                   <p><b>Domicilio de entrega:</b> ${address}</p>
                 </div>
               </tr>
@@ -150,12 +152,33 @@ router.get('/:id', async (request, response) => {
     })
   }
 })
+// /orders -> getByOrderId()
+router.get('/order/:id', async (request, response) => {
+  try {
+    var { id } = request.params
+    const orderData = await order.getByOrderId(id)
+    response.json({
+      success: true,
+      message: 'Order data',
+      data: {
+        order: orderData
+      }
+    })
+  } catch (error) {
+    response.status(400)
+    response.json({
+      success: false,
+      message: error.message
+    })
+  }
+})
 
 // /orders -> getByIdUser()
 router.get('/user/:id', async (request, response) => {
   try {
     var { id } = request.params
     const orderUserData = await order.getByIdUser(id)
+    console.log('orderUserData', orderUserData)
     response.json({
       success: true,
       message: 'Orders by user',

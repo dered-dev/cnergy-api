@@ -3,19 +3,59 @@ const user = require('../usecases/user')
 const router = express.Router()
 const auth = require('../middlewares/auth')
 
+const moment = require('moment')
+
+// API sendgrid
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+// moment months spanish
+moment.updateLocale('mx', {
+  months: [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+    'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Deciembre'
+  ]
+})
+
 // /users -> create()
 router.post('/', async (request, response) => {
   try {
+    console.log(request.body)
     const userCreated = await user.create(request.body)
+    console.log(userCreated)
+    const msg = {
+      to: userCreated.email,
+      from: 'kodemiajorge@gmail.com',
+      subject: 'Bienvenido a Cnergy',
+      html: `
+        <table align="center" style="max-width: 400px; margin-left: auto; margin-right: auto">
+          <tbody >
+            <tr>
+              <td>
+                <div style="border-radius: 4px;box-shadow: 0 4px 10px rgba(0,0,0,.3);padding: 20px;border: 1px solid rgba(0,0,0,.1)">
+                  <h2>Bienvenido <br> ${userCreated.firstName} </h2>
+                  <p>Te has registrado en <b>Cnergy</b> con el correo ${userCreated.email}</p>
+                  <p>Para poder realizar pedidos de la forma mas rápida y segura entra al sitio web </p>
+                  <p> <a href='https://kodemia-ci-interested-genet.mybluemix.net/login'>Ir al sitio</a></p>
+                </div>
+              </tr>
+            </td>
+          </tbody>
+        </table >
+      `
+    }
+    sgMail.send(msg)
+
     response.json({
       success: true,
       message: 'User created',
       data: {
-        userCreated
+        user: userCreated
       }
     })
   } catch (error) {
     response.status(400)
+    console.log(error)
     response.json({
       success: false,
       message: error.message
@@ -117,6 +157,26 @@ router.get('/validate-session', async (request, response) => {
       message: 'Session Validated',
       data: {
         token
+      }
+    })
+  } catch (error) {
+    response.status(401)
+    response.json({
+      success: false,
+      message: 'Invalid session'
+    })
+  }
+})
+
+// /users -> getUserSession()
+router.get('/get-session', async (request, response) => {
+  try {
+    const sessionData = await user.getUserSession(request.headers.authorization)
+    response.json({
+      success: true,
+      message: 'data Session ',
+      data: {
+        session: sessionData
       }
     })
   } catch (error) {

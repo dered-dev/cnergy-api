@@ -34,7 +34,7 @@ function deleteByid (id) {
 
 // GET all orders
 function getAll () {
-  return Order.find()
+  return Order.find({}).sort({ createdAt: 'descending' }).exec()
 }
 
 // GET order by Id
@@ -44,7 +44,14 @@ function getById (id) {
 
 // GET order by Id User
 function getByIdUser (id) {
-  return Order.find({ idUser: id })
+  // return Order.find({ idUser: id })
+  return Order.find({
+    idUser: id
+  })
+}
+// GET order by Id Order
+function getByOrderId (id) {
+  return Order.find({ orderId: id })
 }
 
 // UPDATE order by Id
@@ -58,5 +65,6 @@ module.exports = {
   getAll,
   getById,
   updateById,
-  getByIdUser
+  getByIdUser,
+  getByOrderId
 }

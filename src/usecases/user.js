@@ -27,6 +27,7 @@ function getAll () {
 // LOGIN user
 async function login (email, password) {
   const userFound = await User.findOne({ email })
+  console.log(userFound)
   if (!userFound) throw new Error("Credentials don't match")
   const isValidPassword = await bcrypt.compare(password, userFound.password)
   if (!isValidPassword) throw new Error("Credentials don't match")
@@ -52,6 +53,15 @@ function validateSession (token) {
 
   return jwt.sign({ id })
 }
+// get session
+async function getUserSession (token) {
+  const { id } = jwt.verify(token)
+  const finded = await User.findOne({ _id: id })
+  const dataSession = {
+    user: finded
+  }
+  return dataSession
+}
 
 module.exports = {
   create,
@@ -59,5 +69,6 @@ module.exports = {
   login,
   getAll,
   updateById,
-  validateSession
+  validateSession,
+  getUserSession
 }
