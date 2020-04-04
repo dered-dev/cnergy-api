@@ -18,7 +18,6 @@ moment.updateLocale('mx', {
 
 // /orders -> create()
 router.post('/', async (request, response) => {
-  console.log(request.body)
   try {
     var {
       email,
@@ -49,8 +48,8 @@ router.post('/', async (request, response) => {
 
     const msg = {
       to: email,
-      from: 'kodemiajorge@gmail.com',
-      subject: 'New order! Cnergy ',
+      from: 'orders@cnergy.mx',
+      subject: 'Orden lista! ... Cnergy ',
       html: `
         <table align="center" style="max-width: 400px; margin-left: auto; margin-right: auto">
           <tbody >
@@ -91,7 +90,7 @@ router.post('/', async (request, response) => {
 })
 
 // /orders -> deleteById()
-router.delete('/:id', auth, async (request, response) => {
+router.delete('/:id', async (request, response) => {
   try {
     var { id } = request.params
     const orderDeleteData = await order.deleteByid(id)

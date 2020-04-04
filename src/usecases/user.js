@@ -27,10 +27,11 @@ function getAll () {
 // LOGIN user
 async function login (email, password) {
   const userFound = await User.findOne({ email })
-  console.log(userFound)
-  if (!userFound) throw new Error("Credentials don't match")
+  console.log('userFound', userFound)
+  if (!userFound) throw new Error('Correo o contraseña inválidos')
+  if (!userFound.isVerified) throw new Error('Por favor, valida tu correo electrónico')
   const isValidPassword = await bcrypt.compare(password, userFound.password)
-  if (!isValidPassword) throw new Error("Credentials don't match")
+  if (!isValidPassword) throw new Error('Correo o contraseña inválidos')
 
   return jwt.sign({ id: userFound._id })
 }
@@ -62,6 +63,17 @@ async function getUserSession (token) {
   }
   return dataSession
 }
+// get session
+async function validateMail (hash) {
+  const finded = await User.findOneAndUpdate({ token: hash }, {
+    isVerified: true
+  })
+  const dataSession = {
+    user: finded
+  }
+  console.log(dataSession)
+  return dataSession
+}
 
 module.exports = {
   create,
@@ -70,5 +82,6 @@ module.exports = {
   getAll,
   updateById,
   validateSession,
-  getUserSession
+  getUserSession,
+  validateMail
 }

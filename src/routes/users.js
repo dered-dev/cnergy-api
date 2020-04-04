@@ -9,6 +9,9 @@ const moment = require('moment')
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
+const crypto = require('crypto')
+const secret = 'abcdefg'
+
 // moment months spanish
 moment.updateLocale('mx', {
   months: [
@@ -21,11 +24,16 @@ moment.updateLocale('mx', {
 router.post('/', async (request, response) => {
   try {
     console.log(request.body)
+    const { email } = request.body
+    const hash = crypto.createHmac('sha256', secret)
+      .update(email)
+      .digest('hex')
+    request.body.token = hash
+
     const userCreated = await user.create(request.body)
-    console.log(userCreated)
     const msg = {
       to: userCreated.email,
-      from: 'kodemiajorge@gmail.com',
+      from: 'orders@cnergy.mx',
       subject: 'Bienvenido a Cnergy',
       html: `
         <table align="center" style="max-width: 400px; margin-left: auto; margin-right: auto">
@@ -36,7 +44,7 @@ router.post('/', async (request, response) => {
                   <h2>Bienvenido <br> ${userCreated.firstName} </h2>
                   <p>Te has registrado en <b>Cnergy</b> con el correo ${userCreated.email}</p>
                   <p>Para poder realizar pedidos de la forma mas rápida y segura entra al sitio web </p>
-                  <p> <a href='https://kodemia-ci-interested-genet.mybluemix.net/login'>Ir al sitio</a></p>
+                  <p> <a href='http://localhost:3000/confirmation/${hash}'>Verifica tu correo</a></p>
                 </div>
               </tr>
             </td>
@@ -177,6 +185,29 @@ router.get('/get-session', async (request, response) => {
       message: 'data Session ',
       data: {
         session: sessionData
+      }
+    })
+  } catch (error) {
+    response.status(401)
+    response.json({
+      success: false,
+      message: 'Invalid session'
+    })
+  }
+})
+
+// /validateTokenUser -> validateToken()
+router.get('/confirmation/:hash', async (request, response) => {
+  console.log('confirmation')
+  try {
+    console.log(request.params)
+    const hash = request.params.hash
+    const token = await user.validateMail(hash)
+    response.json({
+      success: true,
+      message: 'Mail Validated',
+      data: {
+        token
       }
     })
   } catch (error) {

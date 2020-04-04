@@ -38,6 +38,18 @@ const userSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 200,
     required: true
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  token: {
+    type: String,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: new Date()
   }
 })
 
