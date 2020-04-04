@@ -44,7 +44,7 @@ router.post('/', async (request, response) => {
                   <h2>Bienvenido <br> ${userCreated.firstName} </h2>
                   <p>Te has registrado en <b>Cnergy</b> con el correo ${userCreated.email}</p>
                   <p>Para poder realizar pedidos de la forma mas rápida y segura entra al sitio web </p>
-                  <p> <a href='http://localhost:3000/confirmation/${hash}'>Verifica tu correo</a></p>
+                  <p> <a href='http://cnergy.mx/confirmation/${hash}'>Verifica tu correo</a></p>
                 </div>
               </tr>
             </td>
